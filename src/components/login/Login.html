@@ -1,0 +1,44 @@
+<div class="hello">
+  <form novalidate  @submit.prevent="validateUser">
+    <md-card md-with-hover>
+      <md-ripple>
+        <md-card-header>
+          <div class="md-title">Авторизация</div>
+          <div class="md-subhead">Введите учётные данные</div>
+        </md-card-header>
+
+        <md-card-content>
+          <div class="md-layout md-gutter">
+            <div class="md-layout-item md-small-size-100">
+              <md-field :class="getValidationClass('login')">
+                <label for="first-name">Логин</label>
+                <md-input name="first-name" id="first-name" v-model="form.login"
+                          :disabled="sending"/>
+                <span class="md-error" v-if="!$v.form.login.required">Логин обязателен</span>
+                <span class="md-error" v-else-if="!$v.form.login.minlength">Логин не соответствует требованиям</span>
+              </md-field>
+            </div>
+
+            <div class="md-layout-item md-small-size-100">
+              <md-field :class="getValidationClass('lastName')">
+                <label for="last-name">Пароль</label>
+                <md-input name="last-name" id="last-name" type="password" v-model="form.lastName"
+                          :disabled="sending"/>
+                <span class="md-error" v-if="!$v.form.lastName.required">Пароль обязателен</span>
+                <span class="md-error" v-else-if="!$v.form.lastName.minlength">Пароль не соответствует требованиям</span>
+              </md-field>
+            </div>
+          </div>
+        </md-card-content>
+        <md-progress-bar md-mode="indeterminate" v-if="sending"/>
+        <md-card-actions>
+          <md-button @click="goToRegistration" type="button">
+            Регистрация
+          </md-button>
+          <md-button type="submit" :disabled="sending">Войти</md-button>
+        </md-card-actions>
+      </md-ripple>
+    </md-card>
+    <md-snackbar :md-active.sync="userSaved">Авторизация не пройдена, проверьте логин или пароль!</md-snackbar>
+  </form>
+</div>

@@ -1,0 +1,49 @@
+<div id="app">
+  <md-toolbar class="md-primary md-dense">
+<!--    <div class="md-toolbar-row">-->
+      <md-button @click="showNavigation = true" class="md-icon-button" md-menu-trigger>
+        <md-icon>menu</md-icon>
+      </md-button>
+      <div class="md-toolbar-section-start">
+      </div>
+      <div class="md-toolbar-section-end">
+<!--        <md-button v-show="isAuthorized" @click="logout" class="md-icon-button">-->
+<!--          <md-tooltip>Выйти</md-tooltip>-->
+<!--          <md-icon>first_page</md-icon>-->
+<!--        </md-button>-->
+<!--        <md-button v-show="isAuthorized" class="md-icon-button">-->
+<!--          <md-tooltip>Аккаунт</md-tooltip>-->
+<!--          <md-icon>account_circle</md-icon>-->
+<!--        </md-button>-->
+<!--        <md-button v-show="!isAuthorized" @click="goToAuthorization" class="md-icon-button">-->
+<!--          <md-tooltip>Войти</md-tooltip>-->
+<!--          <md-icon>exit_to_app</md-icon>-->
+<!--        </md-button>-->
+      </div>
+<!--    </div>-->
+  </md-toolbar>
+  <router-view></router-view>
+  <md-drawer class="md-left" :md-active.sync="showNavigation">
+    <md-toolbar :md-elevation="1">
+      <span class="md-title">Меню</span>
+    </md-toolbar>
+    <md-subheader>Навигация</md-subheader>
+    <md-button @click="goToMap" class="md-icon-button">
+        <md-icon>map</md-icon>
+    </md-button>
+<!--    <md-button @click="goToSpecial" class="md-icon-button">-->
+<!--        <md-icon>explore</md-icon>-->
+<!--    </md-button>-->
+    <md-divider></md-divider>
+    <md-list class="md-double-line">
+      <md-subheader>Контакты</md-subheader>
+      <md-list-item>
+        <md-icon class="md-primary">email</md-icon>
+        <div class="md-list-item-text">
+          <span>palexei98@gmail.com</span>
+          <span>Personal</span>
+        </div>
+      </md-list-item>
+    </md-list>
+  </md-drawer>
+</div>

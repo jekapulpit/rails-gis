@@ -1,0 +1,139 @@
+/*.md-card {*/
+  /*max-height: 500px;*/
+  /*display: inline-block;*/
+/*}*/
+/*.md-dialog-content {*/
+
+/*}*/
+#map {
+  z-index: 999;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.actions {
+  position: absolute;
+  top: 15vh;
+  bottom: 0;
+  right: 2vw;
+  z-index: 1000;
+}
+
+.layers-filter {
+  position: absolute;
+  top: 15vh;
+  bottom: 0;
+  left: 2vw;
+  z-index: 1000;
+}
+
+#popup {
+  border-radius: 5px;
+  border: 1px solid grey;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 10px;
+}
+
+.fullscreen:-moz-full-screen {
+  height: 100vh;
+}
+
+.fullscreen:-webkit-full-screen {
+  height: 100vh;
+}
+
+.fullscreen:-ms-fullscreen {
+  height: 100vh;
+}
+
+.fullscreen:fullscreen {
+  height: 100%;
+}
+
+.fullscreen {
+  margin-bottom: 10px;
+  width: 100%;
+  height: 400px;
+}
+
+.ol-custom-overviewmap,
+.ol-custom-overviewmap.ol-uncollapsible {
+  bottom: auto;
+  left: auto;
+  right: 0;
+  top: 0;
+}
+
+.ol-custom-overviewmap:not(.ol-collapsed) {
+  border: 1px solid black;
+}
+
+.ol-custom-overviewmap .ol-overviewmap-map {
+  border: none;
+  width: 300px;
+}
+
+.ol-custom-overviewmap .ol-overviewmap-box {
+  border: 2px solid red;
+}
+
+.ol-custom-overviewmap:not(.ol-collapsed) button {
+  bottom: auto;
+  left: auto;
+  right: 1px;
+  top: 1px;
+}
+
+.ol-rotate {
+  top: 170px;
+  right: 0;
+}
+
+.md-field {
+  max-width: 200px;
+}
+
+.slider {
+  margin-top: 10px;
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 100%; /* Full-width */
+  height: 10px; /* Specified height */
+  background: #d3d3d3; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+  z-index: 1000;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+  border-radius: 50%;
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #448aff; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #448aff; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.ol-zoom {
+  top: 3.5em !important;
+  left: .5em;
+}

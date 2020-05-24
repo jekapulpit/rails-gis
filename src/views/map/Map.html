@@ -1,0 +1,125 @@
+<div>
+  <md-app style="height: 93vh" md-waterfall md-mode="fixed">
+    <md-app-drawer :md-active.sync="menuVisible">
+      <md-toolbar class="md-transparent" md-elevation="0">
+        Слои
+      </md-toolbar>
+      <div>
+        <md-field>
+          <md-select v-model="filter_option" name="filter_option" id="filter_option">
+            <md-option value="num_lch">Идентификатор Лесхоза</md-option>
+            <md-option value="num_kv">Идентификатор Квартала</md-option>
+          </md-select>
+        </md-field>
+        <md-field>
+          <label>Что искать?</label>
+          <md-input v-model="filter_value"></md-input>
+        </md-field>
+        <md-button class="md-raised md-primary" @click="filterFeatureBy">Поиск</md-button>
+        <md-button class="md-raised md-accent" @click="filter">Очистить</md-button>
+      </div>
+      <md-list :md-expand-single="true">
+        <draggable v-model="myList" group="people" @start="drag=true" @end="drag=false">
+        <md-list-item md-expand v-for="(layer, index) in layerStyles">
+          <md-checkbox v-model="selectedIds" v-bind:value="layer.id" @change="filter"></md-checkbox>
+          <span class="md-list-item-button">
+            <md-button class="md-icon-button" @click="selectStyle(index)">
+            <md-icon>style</md-icon>
+            <md-tooltip md-direction="top">Тематическая карта</md-tooltip>
+            </md-button>
+          </span>
+          <span class="md-list-item-text">{{layer.name}}</span>
+            <md-list slot="md-expand">
+              <template>
+                <md-list-item v-for="(feature, index) in layerFeatures[layer.name]">
+                  <span class="md-list-item-text">{{feature}}</span>
+                </md-list-item>
+              </template>
+            </md-list>
+        </md-list-item>
+        </draggable>
+      </md-list>
+    </md-app-drawer>
+    <md-app-content>
+      <md-button @click="menuVisible = true" class="md-fab md-primary layers-filter">
+        <md-icon>layers</md-icon>
+      </md-button>
+      <md-button v-on:click="changePointer" class="md-fab md-primary actions">
+        <md-icon>games</md-icon>
+      </md-button>
+<!--      <md-speed-dial class="actions" md-direction="bottom">-->
+<!--        <md-speed-dial-target class="md-primary">-->
+<!--          &lt;!&ndash;        <md-icon>my_location</md-icon>&ndash;&gt;-->
+<!--          <md-icon class="md-morph-initial">layers</md-icon>-->
+<!--          <md-icon class="md-morph-final">close</md-icon>-->
+<!--        </md-speed-dial-target>-->
+
+<!--        <md-speed-dial-content>-->
+<!--          <md-button class="md-icon-button" v-on:click="changePointer">-->
+<!--            <md-icon v-show="pointsAdding">games</md-icon>-->
+<!--            <md-icon v-show="!pointsAdding">control_point</md-icon>-->
+<!--          </md-button>-->
+<!--          <md-button class="md-icon-button" @click="menuVisible = true">-->
+<!--            <md-icon>filter_list</md-icon>-->
+<!--          </md-button>-->
+<!--        </md-speed-dial-content>-->
+<!--      </md-speed-dial>-->
+      <div id="fullscreen" class="fullscreen">
+        <div id="map" class="map"></div>
+        <input class="slider" id="myRange" type="range" style="width: 100%;right: 0;
+    position: absolute;" value="0"/>
+      </div>
+      <md-dialog :md-active.sync="showDialog">
+        <md-dialog-title>Фильтр</md-dialog-title>
+        <md-dialog-content>
+          <md-list>
+            <md-subheader>Стиль слоя</md-subheader>
+
+            <md-list-item v-for="(style, index) in selectedLayer.styles">
+              <md-radio v-model="selectedLayer.selectedStyle" v-bind:value="style" />
+              <span class="md-list-item-text">{{style}}</span>
+            </md-list-item>
+          </md-list>
+        </md-dialog-content>
+        <md-dialog-actions>
+          <md-button class="md-primary" @click="showDialog = false">Отмена</md-button>
+          <md-button class="md-primary" @click="changeStyle">Применить</md-button>
+        </md-dialog-actions>
+      </md-dialog>
+      <md-dialog :md-active.sync="photosDialog">
+        <md-dialog-title>Фотографии</md-dialog-title>
+        <md-dialog-content>
+          <md-list-item v-for="(pic) in picsArr">
+            <span class="md-list-item-text">{{pic}}</span>
+            <img :src="pic">
+          </md-list-item>
+        </md-dialog-content>
+        <md-dialog-actions>
+          <md-button class="md-primary" @click="photosDialog = false">Отмена</md-button>
+        </md-dialog-actions>
+      </md-dialog>
+      <div id="popup" title="Welcome to OpenLayers"></div>
+      <md-snackbar md-persistent :md-active.sync="noConn" :md-duration="Infinity">
+        <span>Соединение с геосервером не установлено!</span>
+        <md-button class="md-primary" @click="retry">Повторить</md-button>
+      </md-snackbar>
+      <div v-show="loading">
+        <md-card>
+          <md-card-header>
+            <div class="md-title">Идёт загрузка</div>
+          </md-card-header>
+
+          <md-card-content>
+            <md-progress-spinner :md-diameter="100" :md-stroke="10" md-mode="indeterminate">_</md-progress-spinner>
+          </md-card-content>
+
+          <!--<md-card-actions>-->
+          <!--<md-button>Action</md-button>-->
+          <!--<md-button>Action</md-button>-->
+          <!--</md-card-actions>-->
+        </md-card>
+      </div>
+    </md-app-content>
+  </md-app>
+
+</div>

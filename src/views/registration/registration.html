@@ -1,0 +1,68 @@
+<div>
+  <div class="home">
+  <form novalidate @submit.prevent="validateUser">
+    <md-card md-with-hover>
+      <md-ripple>
+      <md-card-header>
+        <div class="md-title">Регистрация нового пользователя</div>
+      </md-card-header>
+
+      <md-card-content>
+        <div class="md-layout md-gutter">
+          <div class="md-layout-item md-small-size-100">
+            <md-field :class="getValidationClass('login')">
+              <label for="first-name">Логин</label>
+              <md-input name="first-name" id="first-name" v-model="form.login" :disabled="sending"/>
+              <span class="md-error" v-if="!$v.form.login.required">Логин обязателен</span>
+              <span class="md-error" v-else-if="!$v.form.login.minlength">Логин не соответствует требованиям</span>
+            </md-field>
+          </div>
+          <div class="md-layout-item md-small-size-100">
+            <md-field :class="getValidationClass('firstName')">
+              <label for="first-name">Имя</label>
+              <md-input name="first-name" v-model="form.firstName" :disabled="sending" />
+              <span class="md-error" v-if="!$v.form.firstName.required">Введите имя</span>
+              <span class="md-error" v-else-if="!$v.form.firstName.minlength">Некорректное имя</span>
+            </md-field>
+          </div>
+
+          <div class="md-layout-item md-small-size-100">
+            <md-field :class="getValidationClass('lastName')">
+              <label for="last-name">Фамилия</label>
+              <md-input name="last-name" id="last-name" v-model="form.lastName" :disabled="sending" />
+              <span class="md-error" v-if="!$v.form.lastName.required">Введите фамилию</span>
+              <span class="md-error" v-else-if="!$v.form.lastName.minlength">Некорректная фамилия</span>
+            </md-field>
+          </div>
+        </div>
+
+        <md-field :class="getValidationClass('email')">
+          <label for="email">Email</label>
+          <md-input type="email" name="email" id="email" v-model="form.email" :disabled="sending" />
+          <span class="md-error" v-if="!$v.form.email.required">The email is required</span>
+          <span class="md-error" v-else-if="!$v.form.email.email">Invalid email</span>
+        </md-field>
+        <div class="md-layout-item md-small-size-100">
+          <md-field :class="getValidationClass('password')">
+            <label for="last-name">Пароль</label>
+            <md-input name="last-name" type="password" v-model="form.password"
+                      :disabled="sending"/>
+            <span class="md-error" v-if="!$v.form.password.required">Пароль обязателен</span>
+            <span class="md-error" v-else-if="!$v.form.password.minlength">Пароль не соответствует требованиям(минимум 6 символов)</span>
+          </md-field>
+        </div>
+
+      </md-card-content>
+
+      <md-progress-bar md-mode="indeterminate" v-if="sending" />
+
+      <md-card-actions>
+        <md-button type="submit" class="md-raised md-primary" :disabled="sending">Регистрация</md-button>
+      </md-card-actions>
+      </md-ripple>
+    </md-card>
+
+    <md-snackbar :md-active.sync="userSaved">Пользователь {{ lastUser }} was saved with success!</md-snackbar>
+  </form>
+  </div>
+</div>
