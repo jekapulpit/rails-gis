@@ -18,6 +18,7 @@ import axios from 'axios';
 var json = require('../../assets/json/styles.json');
 import draggable from 'vuedraggable'
 import Vue from "vue";
+import {all} from "ol/loadingstrategy";
 
 let scaleLineControl = new ScaleLine();
 scaleLineControl.setUnits('metric');
@@ -38,7 +39,7 @@ let source = new VectorSource();
 let modify = new Modify({
   features: singleClick.getFeatures(),
 });
-let reservedStyles = ['rgba(0, 150, 0, 0.5)', 'rgba(150, 0, 0, 0.5)', 'rgba(255, 255, 0, 0.5)', 'rgba(0, 0, 150, 0.5)', 'rgba(150, 0, 150, 0.5)', 'rgba(0, 150, 150, 0.5)']
+let reservedStyles = ['rgba(0, 150, 0, 0.2)', 'rgba(150, 0, 0, 0.2)', 'rgba(255, 255, 0, 0.2)', 'rgba(0, 0, 150, 0.2)', 'rgba(150, 0, 150, 0.2)', 'rgba(0, 150, 150, 0.2)']
 
 let vector = new VectorLayer({
   source: source,
@@ -164,8 +165,9 @@ export default {
                 params: {
                   'LAYERS': name,
                   'TILED': true,
-                  'STYLES': ''
+                  'STYLES': '',
                 },
+                crossOrigin: 'anonymous',
                 title: 'SPA'
               })
             ),
@@ -175,7 +177,6 @@ export default {
     },
 
     renderFeatures: function (features, style) {
-      console.log(features)
       let vectorSource = new VectorSource({
         features: features,
       });
@@ -189,7 +190,7 @@ export default {
 
     customStyleFunction: function(feature, fillColor = '#00f000') {
       let stroke = new Stroke({
-        color: 'orange',
+        color: 'black',
         width: 1,
       })
       let fill = new Fill({
@@ -216,7 +217,6 @@ export default {
           }
         ).then(response => {
         const data = response.data;
-        console.log(data)
         let features = []
         if(data.features) {
           features = (new GeoJSON({
@@ -292,8 +292,11 @@ export default {
       this.selectedLayer = this.layerStyles[layerId];
       this.showDialog = true;
     },
+
     changeStyle: function () {
       if (this.layers[this.layerStyles[this.changingLayerId].id].getSource().updateParams) {
+        this.orderIds = [this.changingLayerId]
+        this.filter();
         this.layers[this.layerStyles[this.changingLayerId].id].getSource().updateParams({
           'STYLES': this.layerStyles[this.changingLayerId].selectedStyle
         });
@@ -338,9 +341,22 @@ export default {
         let nativePopup = document.getElementById('popup')
         if (ftr) {
           var props = ftr.getProperties();
-          console.log(props)
+          var infoString = "";
+          var allInfo = Object.entries(props).map((entry) => {
+            if(entry[0] !== "geometry" && entry[0] !== "coords")
+              infoString += "<p>"+ entry[0] +": "+ entry[1] + "</p>";
+            return "<p>"+ entry[0] +": "+ entry[1] + "</p>"
+          }).join()
           var coordinates = this.getCoordinateFromPixel(evt.pixel);
-          var info = "<h2><a target='_blank' href='" + props.name + "'>" + `Подробнее о ${props.name_code || 'Стационар'}` + "</a></h2>";
+          var link = !!props.st_trial_plot_id ? ("<a target='_blank' href='" +
+            props.st_trial_plot_id +
+            "'>" +
+            `Подробнее о ${props.name_code || props.name_code.display_name}` +
+            "</a>") : "";
+          var info = "<h2 style='color: #000'> " +
+            infoString +
+            link +
+            "</h2>";
           popup.setPosition(coordinates);
           nativePopup.innerHTML = info
           nativePopup.hidden = false
@@ -350,7 +366,6 @@ export default {
 
       });
       singleClick.on('select', (e) => {
-        console.log(e)
         let id = parseInt(e.selected[0].get('name'), 10);
         singleClick.getFeatures().clear();
         // axios.get(`http://nuolh.belstu.by:3000/static/${id}`)
@@ -399,7 +414,11 @@ export default {
       this.renderFeatures(selectedFeatures, this.customStyleFunction(null, reservedStyles[0]));
     },
 
-    filter() {
+    create_theme_map(layer, style) {
+
+    },
+
+    filter(fullupdate = true) {
       let allIds = this.layers.map(function (currentValue, index) {
         return `${index}`
       });
@@ -410,18 +429,19 @@ export default {
         this.orderIds.forEach(orderId => {
           this.selectedIds.forEach((id) => {
             if (orderId == id) {
+              console.log(this.layers[id].getProperties())
               this.map.addLayer(this.layers[id]);
             }
           });
         })
-      } else {
-        this.selectedIds.forEach((id) => {
-          let ftrs = this.layerFeatures.filter((feat) => {
-            return feat.layerName == `cite:_${this.layerStyles[id].name}`
-          })
-          this.renderFeatures(ftrs, this.customStyleFunction(ftrs, reservedStyles[id]))
-        });
       }
+      this.selectedIds.forEach((id) => {
+        let ftrs = this.layerFeatures.filter((feat) => {
+          return feat.layerName == `cite:_${this.layerStyles[id].name}`
+        })
+        this.renderFeatures(ftrs, this.customStyleFunction(ftrs, reservedStyles[id]))
+      });
+
 
       this.showDialog = false;
     },

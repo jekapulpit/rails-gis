@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"github.com/go-chi/chi"
 	"net/http"
+	"strings"
     "github.com/davecgh/go-spew/spew"
 )
 const (
@@ -19,11 +20,24 @@ var connStr = fmt.Sprintf("host=%s port=%d user=%s "+
 	"password=%s dbname=%s sslmode=disable",
 	host, port, username, password, dbname)
 
+type newTree struct {
+    Xcenter float32 `json:"xcenter"`
+	Ycenter float32 `json:"ycenter"`
+}
+
+type newPolygonPoint struct {
+    Xcenter float32 `json:"x"`
+	Ycenter float32 `json:"y"`
+}
+
 type newPoint struct {
 	Xcenter float32 `json:"xcenter"`
 	Ycenter float32 `json:"ycenter"`
 	Area_type int `json:"area_type"`
 	Photo string `json:"photo"`
+	A_db_porod string `json:"_db_porod"`
+	Trees []newTree `json:"trees"`
+	Points []newPolygonPoint `json:"points"`
 }
 
 type point struct{
@@ -74,8 +88,14 @@ func addPoint(w http.ResponseWriter, r *http.Request) {
 	if error!=nil {
 		panic(error)
 	}
-	result, err := db.Exec("INSERT INTO areas (xcenter, ycenter, area_type, photo) VALUES ($1, $2, $3, $4)",
-		p.Xcenter, p.Ycenter, p.Area_type, p.Photo)
+	points := []string{}
+	for i := 0; i < len(p.Points); i++ {
+	        points = append(points, fmt.Sprintf("%f %f", p.Points[i].Ycenter, p.Points[i].Xcenter))
+        }
+    res := strings.Join(points, ",")
+    fmt.Println(res)
+	result, err := db.Exec("INSERT INTO areas (xcenter, ycenter, area_type, photo, _db_porod, coords) VALUES ($1, $2, $3, $4, $5, $6)",
+		p.Xcenter, p.Ycenter, p.Area_type, p.Photo, p.A_db_porod, res)
 	if err != nil{
 		panic(err)
 	}
