@@ -7,6 +7,15 @@ import VectorSource from 'ol/source/Vector';
 import Select from 'ol/interaction/Select';
 import TileWMS from 'ol/source/TileWMS'
 import {Circle as CircleStyle, Fill, Stroke, Style, Icon} from 'ol/style';
+import {
+  LineString,
+  MultiLineString,
+  MultiPoint,
+  MultiPolygon,
+  Point,
+  Polygon,
+} from 'ol/geom';
+import GeomentyCollection from 'ol/geom/GeometryCollection';
 import {Draw, Modify, Snap} from 'ol/interaction';
 import {defaults as defaultControls, ScaleLine, FullScreen, OverviewMap} from 'ol/control';
 import Overlay from 'ol/Overlay';
@@ -39,6 +48,7 @@ let source = new VectorSource();
 let modify = new Modify({
   features: singleClick.getFeatures(),
 });
+
 let reservedStyles = ['rgba(0, 150, 0, 0.2)', 'rgba(150, 0, 0, 0.2)', 'rgba(255, 255, 0, 0.2)', 'rgba(0, 0, 150, 0.2)', 'rgba(150, 0, 150, 0.2)', 'rgba(0, 150, 150, 0.2)']
 
 let vector = new VectorLayer({
@@ -304,11 +314,31 @@ export default {
       this.showDialog = false;
     },
 
+    setLayerView: function(layerName) {
+      let ftrs = this.layerFeatures.filter((ftr) => {
+        return ftr.layerName == `cite:_${layerName}`;
+      })
+      let vectorSource = new VectorSource({
+        features: ftrs,
+      });
+      let ftlayer = new VectorLayer({
+        source: vectorSource,
+      })
+      let polygon = ftlayer.getSource().getExtent();
+      this.view.fit(polygon, {padding: [170, 50, 30, 150]});
+    },
+
     clearLayer: function(layerName) {
 
     },
 
     createMap: function () {
+      this.view = new View({
+        center: [3016281, 7089075],
+        minZoom: 5,
+        zoom: 15
+      });
+
       this.map = new Map({
         controls: defaultControls().extend([
           scaleLineControl,
@@ -320,11 +350,7 @@ export default {
           aero,
           vector
         ],
-        view: new View({
-          center: [3016281, 7089075],
-          minZoom: 1,
-          zoom: 15
-        })
+        view: this.view,
       });
       let popup = new Overlay({
         element: document.getElementById('popup')
@@ -343,7 +369,7 @@ export default {
           var props = ftr.getProperties();
           var infoString = "";
           var allInfo = Object.entries(props).map((entry) => {
-            if(entry[0] !== "geometry" && entry[0] !== "coords")
+            if(entry[0] !== "geometry" && entry[0] !== "coords" && entry[1])
               infoString += "<p>"+ entry[0] +": "+ entry[1] + "</p>";
             return "<p>"+ entry[0] +": "+ entry[1] + "</p>"
           }).join()
@@ -351,7 +377,7 @@ export default {
           var link = !!props.st_trial_plot_id ? ("<a target='_blank' href='" +
             props.st_trial_plot_id +
             "'>" +
-            `Подробнее о ${props.name_code || props.name_code.display_name}` +
+            `Подробнее` +
             "</a>") : "";
           var info = "<h2 style='color: #000'> " +
             infoString +

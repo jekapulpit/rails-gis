@@ -4,20 +4,7 @@
       <md-toolbar class="md-transparent" md-elevation="0">
         Слои
       </md-toolbar>
-      <div>
-        <md-field>
-          <md-select v-model="filter_option" name="filter_option" id="filter_option">
-            <md-option value="num_lch">Идентификатор Лесхоза</md-option>
-            <md-option value="num_kv">Идентификатор Квартала</md-option>
-          </md-select>
-        </md-field>
-        <md-field>
-          <label>Что искать?</label>
-          <md-input v-model="filter_value"></md-input>
-        </md-field>
-        <md-button class="md-raised md-primary" @click="filterFeatureBy">Поиск</md-button>
-        <md-button class="md-raised md-accent" @click="filter">Очистить</md-button>
-      </div>
+
       <md-list :md-expand-single="true">
         <draggable v-model="myList" group="people" @start="drag=true" @end="drag=false">
         <md-list-item md-expand v-for="(layer, index) in layerStyles">
@@ -29,12 +16,14 @@
             </md-button>
           </span>
           <span class="md-list-item-text">{{layer.name}}</span>
+          <span class="md-list-item-button">
+            <md-button class="md-icon-button" @click="setLayerView(layer.name)">
+            <md-icon>search</md-icon>
+            <md-tooltip md-direction="top">Перейти к слою</md-tooltip>
+            </md-button>
+          </span>
             <md-list slot="md-expand">
-              <template>
-                <md-list-item v-for="(feature, index) in layerFeatures[layer.name]">
-                  <span class="md-list-item-text">{{feature}}</span>
-                </md-list-item>
-              </template>
+
             </md-list>
         </md-list-item>
         </draggable>
