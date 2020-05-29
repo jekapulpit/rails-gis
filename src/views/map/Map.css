@@ -42,7 +42,7 @@
   border: 1px solid grey;
   background-color: rgba(255, 255, 255, 0.9);
   padding: 10px;
-  height: 250px;
+  max-height: 250px;
   overflow-y: scroll;
 }
 

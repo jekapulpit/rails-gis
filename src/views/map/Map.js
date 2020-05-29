@@ -41,6 +41,22 @@ let styleForSelected = new Style({
   })
 })
 
+const attributeKeysMapper = {
+  '_db_porod': 'Порода',
+  'num_lch': 'Номер Лесничества',
+  'forest_type': 'Тип Леса',
+  'tax_year': 'Год Таксации',
+  'num_kv': 'Номер Квартала',
+  'num_vd': 'Номер Выдела',
+  'area': 'Площадь',
+  'age': 'Возраст',
+  '__кл. бони': 'Класс Бонитета',
+  '__состав': 'Состав',
+  '__столбы': 'Столбы',
+  '__номераци': 'Номерация',
+  '__аншлаг': 'Аншлаг'
+}
+
 const singleClick = new Select({
   style: styleForSelected,
 });
@@ -80,6 +96,7 @@ export default {
     }
   },
   data: () => ({
+      styleBuffer: {},
       filter_option: null,
       filter_value: null,
       menuVisible: false,
@@ -199,6 +216,9 @@ export default {
     },
 
     customStyleFunction: function(feature, fillColor = '#00f000') {
+      if (this.styleBuffer[fillColor]){
+        return this.styleBuffer[fillColor]
+      }
       let stroke = new Stroke({
         color: 'black',
         width: 1,
@@ -206,7 +226,7 @@ export default {
       let fill = new Fill({
         color: fillColor
       })
-      return new Style({
+      this.styleBuffer[fillColor] = new Style({
         image: new CircleStyle({
           radius: 20,
           fill: new Fill({color: 'rgba(150, 0, 0, 0.5)'}),
@@ -215,6 +235,7 @@ export default {
         stroke: stroke,
         fill: fill,
       })
+      return this.styleBuffer[fillColor];
     },
 
     getFeaturesForLayer: function (layerName) {
@@ -369,12 +390,12 @@ export default {
           var props = ftr.getProperties();
           var infoString = "";
           var allInfo = Object.entries(props).map((entry) => {
-            if(entry[0] !== "geometry" && entry[0] !== "coords" && entry[1])
-              infoString += "<p>"+ entry[0] +": "+ entry[1] + "</p>";
+            if(Object.keys(attributeKeysMapper).includes(entry[0]) && entry[1])
+              infoString += "<p>"+ attributeKeysMapper[entry[0]] +": "+ entry[1] + "</p>";
             return "<p>"+ entry[0] +": "+ entry[1] + "</p>"
           }).join()
           var coordinates = this.getCoordinateFromPixel(evt.pixel);
-          var link = !!props.st_trial_plot_id ? ("<a target='_blank' href='" +
+          var link = !!props.st_trial_plot_id ? ("<a target='_blank' href='http://172.16.193.234:83/" +
             props.st_trial_plot_id +
             "'>" +
             `Подробнее` +
@@ -455,7 +476,6 @@ export default {
         this.orderIds.forEach(orderId => {
           this.selectedIds.forEach((id) => {
             if (orderId == id) {
-              console.log(this.layers[id].getProperties())
               this.map.addLayer(this.layers[id]);
             }
           });
