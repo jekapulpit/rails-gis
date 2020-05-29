@@ -13,13 +13,6 @@
   left: 0;
   right: 0;
 }
-.md-list-item .md-list-expand > .md-list.md-theme-default {
-  display: none !important;
-}
-
-.md-list-item .md-list-expand-icon.md-theme-default {
-  display: none !important;
-}
 
 .actions {
   position: absolute;

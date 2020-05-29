@@ -23,7 +23,12 @@
             </md-button>
           </span>
             <md-list slot="md-expand">
-
+              <template  v-if="styles[layer.selectedStyle]&&layer.haveStyles">
+                <md-list-item v-for="(style, color) in styles[layer.selectedStyle].parameters">
+                  <span class="md-list-item-text">{{style.name}}</span>
+                  <md-icon v-bind:style="{ 'color': style.color }">format_color_fill</md-icon>
+                </md-list-item>
+              </template>
             </md-list>
         </md-list-item>
         </draggable>

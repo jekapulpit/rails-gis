@@ -27,18 +27,6 @@
       }
     ]
   },
-  "polygon": {
-    "parameters": [
-      {
-        "name": "Полигон",
-        "color": "#AAAAAA"
-      },
-      {
-        "name": "Линия",
-        "color": "#000000"
-      }
-    ]
-  },
   "Лесничества": {
     "parameters": [
       {

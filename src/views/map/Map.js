@@ -104,6 +104,7 @@ export default {
       selectedFilters: {},
       array: [],
       orderIds: [],
+      tiledIds: [],
       picsArr: [],
       lastSelectedFeature: {},
       changingLayerId: null,
@@ -326,7 +327,7 @@ export default {
 
     changeStyle: function () {
       if (this.layers[this.layerStyles[this.changingLayerId].id].getSource().updateParams) {
-        this.orderIds = [this.changingLayerId]
+        this.tiledIds = [this.changingLayerId]
         this.filter();
         this.layers[this.layerStyles[this.changingLayerId].id].getSource().updateParams({
           'STYLES': this.layerStyles[this.changingLayerId].selectedStyle
@@ -395,7 +396,7 @@ export default {
             return "<p>"+ entry[0] +": "+ entry[1] + "</p>"
           }).join()
           var coordinates = this.getCoordinateFromPixel(evt.pixel);
-          var link = !!props.st_trial_plot_id ? ("<a target='_blank' href='http://172.16.193.234:83/" +
+          var link = !!props.st_trial_plot_id ? ("<a target='_blank' href='http://172.16.193.234:81/" +
             props.st_trial_plot_id +
             "'>" +
             `Подробнее` +
@@ -472,6 +473,15 @@ export default {
       allIds.forEach(id => {
         this.map.removeLayer(this.layers[id])
       });
+      if (this.tiledIds.length) {
+        this.tiledIds.forEach(tileId => {
+          this.selectedIds.forEach((id) => {
+            if (tileId == id) {
+              this.map.addLayer(this.layers[id]);
+            }
+          });
+        })
+      }
       if (this.orderIds.length) {
         this.orderIds.forEach(orderId => {
           this.selectedIds.forEach((id) => {
@@ -480,15 +490,14 @@ export default {
             }
           });
         })
+      } else {
+        this.selectedIds.forEach((id) => {
+          let ftrs = this.layerFeatures.filter((feat) => {
+            return feat.layerName == `cite:_${this.layerStyles[id].name}`
+          })
+          this.renderFeatures(ftrs, this.customStyleFunction(ftrs, reservedStyles[id]))
+        });
       }
-      this.selectedIds.forEach((id) => {
-        let ftrs = this.layerFeatures.filter((feat) => {
-          return feat.layerName == `cite:_${this.layerStyles[id].name}`
-        })
-        this.renderFeatures(ftrs, this.customStyleFunction(ftrs, reservedStyles[id]))
-      });
-
-
       this.showDialog = false;
     },
     changePointer() {
