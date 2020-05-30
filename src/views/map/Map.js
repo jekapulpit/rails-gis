@@ -50,11 +50,11 @@ const attributeKeysMapper = {
   'num_vd': 'Номер Выдела',
   'area': 'Площадь',
   'age': 'Возраст',
-  '__кл. бони': 'Класс Бонитета',
-  '__состав': 'Состав',
-  '__столбы': 'Столбы',
-  '__номераци': 'Номерация',
-  '__аншлаг': 'Аншлаг'
+  'bon_class': 'Класс Бонитета',
+  'cons': 'Состав',
+  'stolb': 'Столбы',
+  'numbers': 'Номерация',
+  'unsh': 'Аншлаг'
 }
 
 const singleClick = new Select({
@@ -165,7 +165,7 @@ export default {
   methods: {
     upd: function (values) {
       this.orderIds = values.map(item => item.id);
-      this.layerStyles = [values];
+      this.layerStyles = values;
       this.filter();
     },
     onSelect(items) {
@@ -205,12 +205,14 @@ export default {
     },
 
     renderFeatures: function (features, style) {
+      let maxResolution = features.length > 600 ? this.view.getResolutionForZoom(14.5) : this.view.getMaxResolution();
       let vectorSource = new VectorSource({
         features: features,
       });
       let ftlayer = new VectorLayer({
         source: vectorSource,
-        style: style
+        style: style,
+        maxResolution: maxResolution,
       })
       this.layers.push(ftlayer)
       this.map.addLayer(ftlayer)
@@ -485,8 +487,11 @@ export default {
       if (this.orderIds.length) {
         this.orderIds.forEach(orderId => {
           this.selectedIds.forEach((id) => {
-            if (orderId == id) {
-              this.map.addLayer(this.layers[id]);
+            if(orderId === id) {
+              let ftrs = this.layerFeatures.filter((feat) => {
+                return feat.layerName == `cite:_${this.layerStyles[id].name}`;
+              })
+              this.renderFeatures(ftrs, this.customStyleFunction(ftrs, reservedStyles[id]))
             }
           });
         })
