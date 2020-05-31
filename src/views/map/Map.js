@@ -54,7 +54,8 @@ const attributeKeysMapper = {
   'cons': 'Состав',
   'stolb': 'Столбы',
   'numbers': 'Номерация',
-  'unsh': 'Аншлаг'
+  'unsh': 'Аншлаг',
+  'cat_z': 'Категория Защитности'
 }
 
 const singleClick = new Select({
