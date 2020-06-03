@@ -50,6 +50,11 @@ const attributeKeysMapper = {
   'num_vd': 'Номер Выдела',
   'area': 'Площадь',
   'age': 'Возраст',
+  'square': 'Площадь',
+  'radius': 'Радиус',
+  'living_ground_cover_1': 'Живой напочвенный покров 1',
+  'living_ground_cover_2': 'Живой напочвенный покров 2',
+  'living_ground_cover_3': 'Живой напочвенный покров 3',
   'bon_class': 'Класс Бонитета',
   'cons': 'Состав',
   'stolb': 'Столбы',
@@ -67,6 +72,16 @@ let modify = new Modify({
 });
 
 let reservedStyles = ['rgba(0, 150, 0, 0.2)', 'rgba(150, 0, 0, 0.2)', 'rgba(255, 255, 0, 0.2)', 'rgba(0, 0, 150, 0.2)', 'rgba(150, 0, 150, 0.2)', 'rgba(0, 150, 150, 0.2)']
+
+let reservedStylesForLayer = {
+  'Выделы': 'rgba(175, 186, 176, 0.4)',
+  'Кварталы': 'rgba(52, 235, 76, 0.4)',
+  'Круговые пл. пост. рад.': 'rgba(255, 147, 64, 0.4)',
+  'Стационары': 'rgba(255, 210, 64, 0.4)',
+  'Реласкопические кр. пл.': 'rgba(202, 133, 255, 0.4)',
+  'Постоянные пробные площади': 'rgba(148, 91, 6, 0.4)',
+  'Населенные пункты': 'rgba(100, 98, 196, 0.4)',
+}
 
 let vector = new VectorLayer({
   source: source,
@@ -383,6 +398,7 @@ export default {
       this.map.addOverlay(popup);
       this.map.addInteraction(singleClick);
       let m = this.map;
+      let photosDialog = this.showPhotosDialog;
       this.map.on('click', function(evt) {
         var pixel = evt.pixel;
         let ftr = m.forEachFeatureAtPixel(pixel, function(feature, layer) {
@@ -392,49 +408,70 @@ export default {
         let nativePopup = document.getElementById('popup')
         if (ftr) {
           var props = ftr.getProperties();
-          var infoString = "";
-          var allInfo = Object.entries(props).map((entry) => {
-            if(Object.keys(attributeKeysMapper).includes(entry[0]) && entry[1])
-              infoString += "<p>"+ attributeKeysMapper[entry[0]] +": "+ entry[1] + "</p>";
-            return "<p>"+ entry[0] +": "+ entry[1] + "</p>"
-          }).join()
-          var coordinates = this.getCoordinateFromPixel(evt.pixel);
-          var link = !!props.st_trial_plot_id ? ("<a target='_blank' href='http://172.16.193.234:81/" +
-            props.st_trial_plot_id +
-            "'>" +
-            `Подробнее` +
-            "</a>") : "";
-          var info = "<h2 style='color: #000'> " +
-            infoString +
-            link +
-            "</h2>";
-          popup.setPosition(coordinates);
-          nativePopup.innerHTML = info
-          nativePopup.hidden = false
+          if(!!props.name) {
+            photosDialog(props);
+          } else {
+            var infoString = "";
+            var allInfo = Object.entries(props).map((entry) => {
+              if(Object.keys(attributeKeysMapper).includes(entry[0]) && entry[1])
+                infoString += "<p>"+ attributeKeysMapper[entry[0]] +": "+ entry[1] + "</p>";
+              return "<p>"+ entry[0] +": "+ entry[1] + "</p>"
+            }).join()
+            var coordinates = this.getCoordinateFromPixel(evt.pixel);
+            var link = !!props.st_trial_plot_id ? ("<a target='_blank' href='http://172.16.193.234:81/" +
+              props.st_trial_plot_id +
+              "'>" +
+              `Подробнее` +
+              "</a>") : "";
+            var info = "<h2 style='color: #000'> " +
+              infoString +
+              link +
+              "</h2>";
+            popup.setPosition(coordinates);
+            nativePopup.innerHTML = info
+            nativePopup.hidden = false
+          }
         } else {
           nativePopup.hidden = true
         }
 
       });
-      singleClick.on('select', (e) => {
-        let id = parseInt(e.selected[0].get('name'), 10);
-        singleClick.getFeatures().clear();
-        // axios.get(`http://nuolh.belstu.by:3000/static/${id}`)
-        //   .then(res => {
-        //     const dom = res.data;
-        //     const arr = dom.split('\n');
-        //     let arr2 = [];
-        //     for (let i = 1; i < arr.length - 2; i++) {
-        //       arr2.push(`http://nuolh.belstu.by:3000/static/${id}/` + arr[i].split('\"')[1]);
-        //     }
-        //     this.picsArr = arr2;
-        //     this.map.removeInteraction(e)
-        //     console.log('dialog!');
-        //     this.photosDialog = true;
-        //   })
-        //   .catch(() => {
-        //   })
-      });
+      // singleClick.on('select', (e) => {
+      //   let id = parseInt(e.selected[0].get('name'), 10);
+      //   singleClick.getFeatures().clear();
+      //   axios.get(`http://nuolh.belstu.by:3000/static/${id}`)
+      //     .then(res => {
+      //       const dom = res.data;
+      //       const arr = dom.split('\n');
+      //       let arr2 = [];
+      //       for (let i = 1; i < arr.length - 2; i++) {
+      //         arr2.push(`http://nuolh.belstu.by:3000/static/${id}/` + arr[i].split('\"')[1]);
+      //       }
+      //       this.picsArr = arr2;
+      //       this.map.removeInteraction(e)
+      //       console.log('dialog!');
+      //       this.photosDialog = true;
+      //     })
+      //     .catch(() => {
+      //     })
+      // });
+    },
+    showPhotosDialog: function (props) {
+      let id = parseInt(props.name, 10);
+      axios.get(`http://localhost:8088/static/${id}`)
+        .then(res => {
+          const dom = res.data;
+          const arr = dom.split('\n');
+          let arr2 = [];
+          for (let i = 1; i < arr.length - 2; i++) {
+            arr2.push(`http://localhost:8088/static/${id}/` + arr[i].split('\"')[1]);
+          }
+          this.picsArr = arr2;
+          this.photosDialog = true;
+        })
+        .catch((err) => {
+          console.log(err);
+        })
     },
     addDrawInteraction: function () {
       this.map.addInteraction(this.draw);
@@ -492,7 +529,7 @@ export default {
               let ftrs = this.layerFeatures.filter((feat) => {
                 return feat.layerName == `cite:_${this.layerStyles[id].name}`;
               })
-              this.renderFeatures(ftrs, this.customStyleFunction(ftrs, reservedStyles[id]))
+              this.renderFeatures(ftrs, this.customStyleFunction(ftrs, reservedStylesForLayer[this.layerStyles[id].name]))
             }
           });
         })
@@ -501,7 +538,7 @@ export default {
           let ftrs = this.layerFeatures.filter((feat) => {
             return feat.layerName == `cite:_${this.layerStyles[id].name}`
           })
-          this.renderFeatures(ftrs, this.customStyleFunction(ftrs, reservedStyles[id]))
+          this.renderFeatures(ftrs, this.customStyleFunction(ftrs, reservedStylesForLayer[this.layerStyles[id].name]))
         });
       }
       this.showDialog = false;

@@ -30,6 +30,10 @@
   z-index: 1000;
 }
 
+.picture-list-item {
+  list-style: none;
+}
+
 #popup {
   border-radius: 5px;
   border: 1px solid grey;
