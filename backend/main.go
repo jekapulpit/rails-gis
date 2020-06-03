@@ -16,11 +16,6 @@ func main() {
 	// This is the domain the server should accept connections for.
 	//domains := []string{"localhost", "localhost:8088"}
 	handler := server.NewRouter()
-  http.Handle("/static/",
-        http.StripPrefix("/static", http.FileServer(http.Dir())),
-  )
-  http.ListenAndServe(":5050", nil)
-  panic(http.ListenAndServe("localhost:8080", nil))
 	srv := &http.Server{
 		Addr:         ":8088",
 		Handler:      handler,
