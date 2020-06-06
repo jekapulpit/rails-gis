@@ -36,6 +36,11 @@ let styleForSelected = new Style({
     color: 'white',
     width: 1,
   }),
+  image: new CircleStyle({
+    radius: 10,
+    fill: new Fill({color: 'rgba(255, 255, 255, 0.5)'}),
+    stroke: new Stroke({color: '#ffffff', width: 1})
+  }),
   fill: new Fill({
     color: 'rgba(255, 255, 255, 0.5)'
   })
@@ -247,8 +252,10 @@ export default {
       })
       this.styleBuffer[fillColor] = new Style({
         image: new CircleStyle({
-          radius: 20,
-          fill: new Fill({color: 'rgba(150, 0, 0, 0.5)'}),
+          radius: 10,
+          fill: new Fill({
+            color: fillColor
+          }),
           stroke: new Stroke({color: '#000000', width: 1})
         }),
         stroke: stroke,
@@ -408,7 +415,7 @@ export default {
         let nativePopup = document.getElementById('popup')
         if (ftr) {
           var props = ftr.getProperties();
-          if(!!props.name) {
+          if(!!props.cmt) {
             photosDialog(props);
           } else {
             var infoString = "";

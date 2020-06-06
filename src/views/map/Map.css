@@ -14,6 +14,11 @@
   right: 0;
 }
 
+#search-button {
+  position: absolute;
+  right: 30px;
+}
+
 .actions {
   position: absolute;
   top: 15vh;
