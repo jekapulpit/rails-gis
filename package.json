@@ -9,7 +9,7 @@
     "start": "vue-cli-service serve"
   },
   "dependencies": {
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "node-sass": "^4.13.1",
     "ol": "^5.3.3",
     "register-service-worker": "^1.7.0",
