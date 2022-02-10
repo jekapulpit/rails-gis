@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "axios": "^0.18.1",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "ol": "^5.3.3",
     "register-service-worker": "^1.7.0",
     "sass-loader": "^7.3.1",
